@@ -1,0 +1,54 @@
+Monolithic application :-
+**********************
+In a Monolithic application  all the functionalities or all the components included in to a single application. 
+
+Drawbacks :-
+********
+
+=> Dynamic Scaleup or Scale down is not possible for specific componants of an application.
+=> Maintaining application becomes very much complecated.
+=> Change in one component would reflect other components.
+
+
+Microservice is an architecture  which can address all the drawbacks of Monolothic applications.
+
+MicroServices :-
+*************
+	=>In a Microservice architecture we will identify the independent components of an application.
+	=>We will develop every independent component as a different restful application.
+	=>Microservices are group of restful applications.
+
+Microservice is a small , independent, deployable unit.
+
+	Refer MicroService Diagram:
+
+Advantages of microservices :-
+**************************
+=> Microservices are by default cloudenables so that dynamic scaleup and scaledown is possible.
+=> Maintaning the application become very easier. Change in one microservice does effect other microservices.
+=> Enables easy release cycles.(Adding new features to the microservices then deploy into production enviroment).
+=> Microservices enables the user to use different technologies.
+
+Challenges in MicroServices :-
+*************************
+	1. Communication between one microservice to another microservice. This also called maintaining the bounderies of an microservices.
+
+	2.Configuration Management would be challenging job.
+
+		Refer MicroServices Configuration diagram.
+
+	3. Dynamic scale up and Dynamic Scale down for microservices. This also called as LoadBalancing.
+	
+	4. Visibility : 
+
+		Debuging the microservice would be complicated. Monitoring available microservices.
+
+	5. Fault Tolarence
+
+		Sending default responses when the microservice is down.
+
+
+
+
+		
+	
