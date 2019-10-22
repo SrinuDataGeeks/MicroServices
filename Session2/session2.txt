@@ -1,0 +1,70 @@
+Challenges in MicroServices :-
+*************************
+	1. Communication between one microservice to another microservice. This also called maintaining the bounderies of an microservices.
+
+	2.Configuration Management would be challenging job.
+
+		Refer MicroServices Configuration diagram.
+
+	3. Dynamic scale up and Dynamic Scale down for microservices. This also called as LoadBalancing.
+	
+	4. Visibility : 
+
+		Debuging the microservice would be complicated. Monitoring available microservices.
+
+	5. Fault Tolarence
+
+		Sending default responses when the microservice is down.
+
+
+By following below we can overcome the Microservices:-
+****************************************************
+	
+ 	Maintaining the bounderies of an microservices:-
+	*********************************************
+	
+	   Feign Client :-
+	   ***********
+		a.Feign Client proxies can be used to make a communication between one microservice to another microservice.
+	  RestTemplate:-
+	  *************
+	RestTemplate also be used to make a communication  between one microservice to another microservice.
+			Always prefferable is Feign Client Proxies.
+
+
+	Configuration Management 
+	***********************
+
+	=> As we know every micorservice has multiple enviroments and multiple instances so SpringCloud enables us to maintain the configuration .
+	=> In a microservice enviroment all the configuration information related to microservice can be maintianed 		   within a git repository.
+	
+	SpringCloud :-
+	***********
+		=> In SpringCloud we have "spring-cloud-config-server", which can be used for configuration management.
+		=> For Configuration management we will implement a microservice with "spring-cloud-config-server".
+		=> The "spring-cloud-config-server" is avaialble to us in the form of "spring-cloud-config" dependency.
+		=> The "spring-cloud-config-server" reads the data from git repository .
+		=> All the microservices gets the configuration information from git using "spring-cloud-config-server".
+			refer "spring-cloud-config-server" diagram.
+
+
+
+Dynamic scale up and Dynamic Scale down :-
+***************************************
+		NamingServer:
+		***********
+		=> SpringCloud come up with NamingServer, which can be used for Server Side Loadbalancing.
+		=> All the microservices should be registered with the NamingServer.
+		=> Service Registry :
+		   ****************
+			 Registring MicroServices with NamingServer is called Service Registry.
+
+		=>Naming Server maintains all the instances of a microservices,whenever is needed it can scale up or scale 		  down the microservices.
+
+		Ribbon Client:-
+		***********
+		
+		=> In a microservice enviroment one microservice is avialble to us with multiple instances(http ports) so we 			should not make a call to microservice with http port number to maintain load balancing.
+		=> We should use Ribbon client to communicate with microservice.
+		=> Ribbon Client is a client side load balancer, which can talk to the NamingServer to get the available 		   microservice instance. Through this instance the request will be processed.
+				
