@@ -1,6 +1,7 @@
 Challenges in MicroServices :-
 *************************
-	1. Communication between one microservice to another microservice. This also called maintaining the bounderies of an microservices.
+	1. Communication between one microservice to another microservice & Maintaining bounderies of a microservices.
+
 
 	2.Configuration Management would be challenging job.
 
@@ -10,9 +11,12 @@ Challenges in MicroServices :-
 	
 	4. Visibility : 
 
-		Debuging the microservice would be complicated. Monitoring available microservices.
+		Debuging   the microservice would be complicated.
 
-	5. Fault Tolarence
+	5.Security :
+		Providing security to the microservices would be challenging job.
+
+	6. Fault Tolarence
 
 		Sending default responses when the microservice is down.
 
@@ -22,15 +26,18 @@ By following below we can overcome the Microservices:-
 	
  	Maintaining the bounderies of an microservices:-
 	*********************************************
-	
-	   Feign Client :-
+	=> We use restful service to develop microservices.
+	=> We should properly define job of the microservice,based on project architecture.
+	Communication between microservices :-
+	***********************************
+  	 Feign Client :-
 	   ***********
 		a.Feign Client proxies can be used to make a communication between one microservice to another microservice.
 	  RestTemplate:-
 	  *************
 	RestTemplate also be used to make a communication  between one microservice to another microservice.
 			Always prefferable is Feign Client Proxies.
-
+	 
 
 	Configuration Management 
 	***********************
@@ -42,10 +49,11 @@ By following below we can overcome the Microservices:-
 	***********
 		=> In SpringCloud we have "spring-cloud-config-server", which can be used for configuration management.
 		=> For Configuration management we will implement a microservice with "spring-cloud-config-server".
-		=> The "spring-cloud-config-server" is avaialble to us in the form of "spring-cloud-config" dependency.
+		=> The "spring-cloud-config-server" is avaialble to us in the form of "config-server" dependency.
 		=> The "spring-cloud-config-server" reads the data from git repository .
 		=> All the microservices gets the configuration information from git using "spring-cloud-config-server".
 			refer "spring-cloud-config-server" diagram.
+		=>"spring-cloud-config-server" can act a centralized microservice .
 
 
 
@@ -66,5 +74,22 @@ Dynamic scale up and Dynamic Scale down :-
 		
 		=> In a microservice enviroment one microservice is avialble to us with multiple instances(http ports) so we 			should not make a call to microservice with http port number to maintain load balancing.
 		=> We should use Ribbon client to communicate with microservice.
-		=> Ribbon Client is a client side load balancer, which can talk to the NamingServer to get the available 		   microservice instance. Through this instance the request will be processed.
+		=> Ribbon Client is a client side load balancer, which can talk to the NamingServer to get the available 		 	  microservice instance. Through this instance the request will be processed.
 				
+Visibility :-
+**********
+	=> Zipkin Distributed Tracing can be used to trace the request along with multiple microservices.
+	=> Zipkin adds unique requestid for a each request which can be logged within all the microservices.
+
+Security :-
+*******
+	=> Netflix API gateway can be used to provide security to the microservices.
+	=> Using Netflix API gateway we can implement authentication and authorization logics.
+
+Fault Tolarence:
+**************
+	=> Hytrix can be used to send default responses to the consumer when the microservice is down.
+
+
+
+
