@@ -1,0 +1,24 @@
+=> Developing "UserManagementMicroService":
+	refer "UserManagementMicroService" diagram
+
+=> sql Script
+
+	Drop table UserInfo;
+	Create Table UserInfo(User_Id varchar2(10) Primary Key , Password varchar2(10),First_Name varchar2(10),Last_Name varchar2(10));
+
+	Insert Into UserInfo(User_Id,Password,First_Name,Last_Name) values('Srinu.Np','1234','Srinu','Np');
+	Insert Into UserInfo(User_Id,Password,First_Name,Last_Name) values('Naresh.M','5678','Naresh','M');
+	Insert Into UserInfo(User_Id,Password,First_Name,Last_Name) values('SaiKalyan.S','1234','SaiKalyan','S');
+	Insert Into UserInfo(User_Id,Password,First_Name,Last_Name) values('Sateesh.J','7890','Sateesh','J');
+
+	COMMIT;
+
+=> Create a UserManagementService From "start.spring.io" site.
+
+	Dependencies to be added
+		
+		1. SpringBoot DevTools
+		2. SpringBoot Actuator
+		3. Spring Web
+		4. Config Client (Enables to read configuration information from git using Spring-Cloud-Config-Server)
+		5. Spring Data JPA
