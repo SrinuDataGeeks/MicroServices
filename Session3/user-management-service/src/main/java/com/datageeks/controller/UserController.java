@@ -2,7 +2,10 @@ package com.datageeks.controller;
 
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -21,9 +24,14 @@ import com.datageeks.service.UserService;
 @RestController
 @RequestMapping("/users")
 public class UserController {
+	
+		Logger log = LoggerFactory.getLogger(UserController.class);
 
 	@Autowired
 	private UserService userService = null;
+	
+	@Value("${usermanagementservice-env}")
+	private String environment = null;
 
 	@PostMapping
 	public ResponseEntity<User> save(@RequestBody User user) {
@@ -56,6 +64,7 @@ public class UserController {
 			return new ResponseEntity<List<User>>(HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 
+		log.info(" *********  environment ********"+environment);
 		return new ResponseEntity<List<User>>(userList, HttpStatus.ACCEPTED);
 	}
 

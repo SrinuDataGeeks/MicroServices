@@ -1,8 +1,60 @@
-=> Developing "UserManagementMicroService":
+			Developing a Miroservice => "user-management-service"
+		*****************************************************************
+
+Step 1:	 create git repository with name "global-config" .
+
+ create following property  files with db configuration information for user-management-service within "global-config" git repo.
+	user-management-service.properties
+	user-management-service-dev.properties
+	user-management-service-test.properties
+	user-management-service-stage.properties
+	user-management-service-prod.properties
+
+	refer global-config repo property files.
+
+
+Step 2:  Developing Spring-Cloud-Config-Server microservice to read  configuration data from "global-config" git repo.
+
+	2 a). goto start.spring.io create "spring-cloud-config-server-service" app.
+
+		artifact-id : spring-cloud-config-server-service
+		group-id    : com.datageeks
+	
+		dependencies: SpringBoot DevTools,SpringBoot Actuator,Spring Web,Config Server
+
+	2 b). import the maven project , goto SpringCloudConfigServerServiceApplication.java apply 
+		"@EnableConfigServer" annotation.
+
+	2 c). go to application.properties write the below information.
+
+		spring.application.name=spring-cloud-config-server
+		server.port = 9000
+		spring.cloud.config.server.git.uri=https://github.com/SrinuDataGeeks/global-config.git
+
+	Note: The git uri would change based on your git repo.
+
+       2 d). Run the "spring-cloud-config-server-service" app, it starts on port 9000.
+
+
+       2 e). Test & Verify :
+		Goto postman : make a get request "http://localhost:9000/user-management-service/default"
+			       which loads properties from user-management-service.properties.
+
+				make a get request "http://localhost:9000/user-management-service/dev"
+			        which loads properties from user-management-service-dev.properties.
+		
+				etc...
+
+Step 3:	 Create a user-management-service From "start.spring.io" site.
+
+		artifact-id : user-management-service
+		group-id    : com.datageeks
+		dependencies: SpringBoot DevTools,SpringBoot Actuator,Spring Web,Config Server,Spring Data JPA
+
 	refer "UserManagementMicroService" diagram
 
-=> sql Script
-
+	=> sql Script
+	*************
 	Drop table UserInfo;
 	Create Table UserInfo(User_Id varchar2(10) Primary Key , Password varchar2(10),First_Name varchar2(10),Last_Name varchar2(10));
 
@@ -13,12 +65,16 @@
 
 	COMMIT;
 
-=> Create a UserManagementService From "start.spring.io" site.
 
-	Dependencies to be added
-		
-		1. SpringBoot DevTools
-		2. SpringBoot Actuator
-		3. Spring Web
-		4. Config Client (Enables to read configuration information from git using Spring-Cloud-Config-Server)
-		5. Spring Data JPA
+	3 a) Develop DataAccessLayer, Service Layer,RestController.
+	3 b) rename the application.properties to bootstrap.properties.
+	3 c) write the following details into bootstrap.properties
+		spring.application.name=user-management-service
+			server.port = 9001
+			spring.cloud.config.uri=http://localhost:9000
+			spring.profiles.active=dev
+
+	3 d) run the user-management-service  microservice application.
+
+The Spring-Cloud-Config-Server microservice should be up and running before starting user-management-service.		
+	
