@@ -49,7 +49,7 @@ Step 3:	 Create a user-management-service From "start.spring.io" site.
 
 		artifact-id : user-management-service
 		group-id    : com.datageeks
-		dependencies: SpringBoot DevTools,SpringBoot Actuator,Spring Web,Config Server,Spring Data JPA
+		dependencies: SpringBoot DevTools,SpringBoot Actuator,Spring Web,Config Client,Spring Data JPA
 
 	refer "UserManagementMicroService" diagram
 
