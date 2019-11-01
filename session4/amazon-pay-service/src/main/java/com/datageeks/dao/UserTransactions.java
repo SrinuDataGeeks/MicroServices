@@ -14,28 +14,32 @@ import javax.persistence.Table;
 
 import org.hibernate.annotations.GenericGenerator;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
 @Entity
 @Table(name = "USER_TRANSACTIONS")
 public class UserTransactions {
-	
+
 	@Id
-	@GenericGenerator(name = "icr",strategy = "increment")
+	@GenericGenerator(name = "icr", strategy = "increment")
 	@GeneratedValue(generator = "icr")
-	@Column(name="TXN_ID")
+	@Column(name = "TXN_ID")
 	private Integer transactionId = null;
-	
-		
-	@Column(name="AMOUNT_TRANSFERED")
+
+	@Column(name = "AMOUNT_TRANSFERED")
 	private Float amountTransfered = null;
-	
-	@Column(name="DATE_TIME")
+
+	@Column(name = "DATE_TIME")
 	private Timestamp dateAndTimeUpdate = null;
 	
-	/*
-	 * @ManyToOne(cascade = CascadeType.MERGE,fetch = FetchType.LAZY)
-	 * 
-	 * @JoinColumn(name = "USER_FK_ID") private UserAccount userAccount = null;
-	 */
+	@Column(name = "TXN_TYPE")
+	private String txnType = null;
+
+	@ManyToOne(cascade = CascadeType.MERGE, fetch = FetchType.LAZY)
+	@JoinColumn(name = "USER_FK_ID")
+	@JsonBackReference
+	private UserAccount userAccount = null;
 
 	public Integer getTransactionId() {
 		return transactionId;
@@ -61,13 +65,20 @@ public class UserTransactions {
 		this.dateAndTimeUpdate = dateAndTimeUpdate;
 	}
 
-	/*
-	 * public UserAccount getUserAccount() { return userAccount; }
-	 * 
-	 * public void setUserAccount(UserAccount userAccount) { this.userAccount =
-	 * userAccount; }
-	 */
-	
-	
+	public UserAccount getUserAccount() {
+		return userAccount;
+	}
+
+	public void setUserAccount(UserAccount userAccount) {
+		this.userAccount = userAccount;
+	}
+
+	public String getTxnType() {
+		return txnType;
+	}
+
+	public void setTxnType(String txnType) {
+		this.txnType = txnType;
+	}
 
 }

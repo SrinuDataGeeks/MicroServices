@@ -16,6 +16,9 @@ import javax.persistence.Table;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
 @Entity
 @Table(name = "USER_ACCOUNT")
 public class UserAccount implements Serializable {
@@ -31,9 +34,10 @@ public class UserAccount implements Serializable {
 	private Timestamp lastUpdated = null;
 	
 	
-	@OneToMany(cascade = CascadeType.MERGE,fetch = FetchType.EAGER)
+	@OneToMany(cascade = CascadeType.ALL,fetch = FetchType.EAGER)
 	@Fetch(FetchMode.SUBSELECT)
 	@JoinColumn(name = "USER_FK_ID")
+	@JsonManagedReference
 	private Set<UserTransactions> userTransactionsSet = null;
 
 

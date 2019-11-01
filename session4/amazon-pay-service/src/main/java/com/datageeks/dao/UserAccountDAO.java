@@ -9,7 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public class USERACCOUNTDAO {
+public class UserAccountDAO {
 
 	@Autowired
 	private EntityManager entityManager = null;
@@ -31,6 +31,16 @@ public class USERACCOUNTDAO {
 		}
 		return user;
 	}
+	
+	public UserTransactions save(UserTransactions userTransactions) throws DataSourceException {
+		try {
+			entityManager.unwrap(Session.class).save(userTransactions);
+		} catch (Exception e) {
+			throw new DataSourceException(e.getMessage());
+		}
+		return userTransactions;
+	}
+
 
 	public UserAccount get(String userId) throws DataSourceException {
 		UserAccount user = null;

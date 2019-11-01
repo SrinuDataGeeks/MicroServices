@@ -1,6 +1,8 @@
 package com.datageeks.controller;
 
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,6 +18,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.client.RestTemplate;
 
 import com.datageeks.dao.User;
 import com.datageeks.service.ServicessException;
@@ -37,6 +40,10 @@ public class UserController {
 	public ResponseEntity<User> save(@RequestBody User user) {
 		try {
 			userService.save(user);
+			RestTemplate restTemplate = new RestTemplate();
+			Map<String, String> uriVariables = new LinkedHashMap<String, String>();
+			uriVariables.put("userId", user.getUserid());
+			restTemplate.postForEntity("http://localhost:9002/userAccounts/{userId}", null, null, uriVariables);
 		} catch (ServicessException exp) {
 			return new ResponseEntity<User>(HttpStatus.INTERNAL_SERVER_ERROR);
 		}
@@ -83,7 +90,13 @@ public class UserController {
 	@DeleteMapping(path = "/{id}")
 	public ResponseEntity<HttpStatus> deleteById(@PathVariable("id") String userId) {
 		try {
+			RestTemplate restTemplate = new RestTemplate();
+			Map<String, String> uriVariables = new LinkedHashMap<String, String>();
+			uriVariables.put("userId", userId);
+			restTemplate.delete("http://localhost:9002/userAccounts/{userId}", uriVariables);
+			
 			userService.delete(userId);
+			
 		} catch (ServicessException exp) {
 			return new ResponseEntity<HttpStatus>(HttpStatus.INTERNAL_SERVER_ERROR);
 		}

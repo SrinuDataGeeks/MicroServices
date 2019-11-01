@@ -10,13 +10,14 @@ import org.springframework.stereotype.Service;
 
 import com.datageeks.dao.DataSourceException;
 import com.datageeks.dao.UserAccount;
-import com.datageeks.dao.USERACCOUNTDAO;
+import com.datageeks.dao.UserAccountDAO;
+import com.datageeks.dao.UserTransactions;
 
 @Service
 public class UserAccountService {
 
 	@Autowired
-	private USERACCOUNTDAO userAccountDAO = null;
+	private UserAccountDAO userAccountDAO = null;
 
 	@Transactional(value = TxType.REQUIRED,rollbackOn = ServicessException.class)
 	public UserAccount update(UserAccount user) throws ServicessException {
@@ -36,6 +37,16 @@ public class UserAccountService {
 			throw new ServicessException(e.getMessage());
 		}
 		return user;
+	}
+	
+	@Transactional(value = TxType.REQUIRED,rollbackOn = ServicessException.class)
+	public UserTransactions save(UserTransactions userTransactions) throws ServicessException {
+		try {
+			userAccountDAO.save(userTransactions);
+		} catch (DataSourceException e) {
+			throw new ServicessException(e.getMessage());
+		}
+		return userTransactions;
 	}
 
 	public UserAccount get(String userId) throws ServicessException {
