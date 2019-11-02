@@ -20,6 +20,7 @@ public class User implements Serializable {
 	private String firstName = null;
 	@Column(name = "LAST_NAME")
 	private String lastName = null;
+	
 
 	public User() {
 		super();
@@ -58,4 +59,7 @@ public class User implements Serializable {
 		this.lastName = lastName;
 	}
 
+	
+
+	
 }

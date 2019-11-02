@@ -39,6 +39,7 @@ public class UserAccount implements Serializable {
 	@JoinColumn(name = "USER_FK_ID")
 	@JsonManagedReference
 	private Set<UserTransactions> userTransactionsSet = null;
+	
 
 
 	public String getUserId() {
@@ -79,7 +80,7 @@ public class UserAccount implements Serializable {
 	public void setUserTransactionsSet(Set<UserTransactions> userTransactionsSet) {
 		this.userTransactionsSet = userTransactionsSet;
 	}
-	
-	
 
+
+	
 }

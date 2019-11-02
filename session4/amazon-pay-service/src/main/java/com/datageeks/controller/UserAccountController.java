@@ -9,6 +9,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -34,8 +35,8 @@ public class UserAccountController {
 	@Autowired
 	private UserAccountService userAccountService = null;
 
-	@Value("${usermanagementservice-env}")
-	private String environment = null;
+	@Autowired
+	private Environment environment = null;
 
 	@PostMapping(path = "/{userId}")
 	public ResponseEntity<UserAccount> save(@PathVariable("userId") String userId) {
@@ -45,6 +46,7 @@ public class UserAccountController {
 			userAccount.setBalance(0f);
 			userAccount.setLastUpdated(new Timestamp(System.currentTimeMillis()));
 			userAccountService.save(userAccount);
+			System.out.println(" ***** Amazo-Pay-Service PORT :: "+environment.getProperty("local.server.port"));
 		} catch (ServicessException exp) {
 			return new ResponseEntity<UserAccount>(HttpStatus.INTERNAL_SERVER_ERROR);
 		}
@@ -102,7 +104,6 @@ public class UserAccountController {
 			return new ResponseEntity<List<UserAccount>>(HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 
-		log.info(" *********  environment ********" + environment);
 		return new ResponseEntity<List<UserAccount>>(userAccountList, HttpStatus.ACCEPTED);
 	}
 
@@ -129,7 +130,7 @@ public class UserAccountController {
 		} catch (ServicessException exp) {
 			return new ResponseEntity<HttpStatus>(HttpStatus.INTERNAL_SERVER_ERROR);
 		}
-
+		System.out.println(" ***** Amazo-Pay-Service PORT :: "+environment.getProperty("local.server.port"));
 		return new ResponseEntity<HttpStatus>(HttpStatus.NO_CONTENT);
 	}
 

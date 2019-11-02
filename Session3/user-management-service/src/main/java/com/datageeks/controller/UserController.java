@@ -33,6 +33,9 @@ public class UserController {
 	@Autowired
 	private UserService userService = null;
 	
+	@Autowired
+	private AmazonPayServiceFiegnProxy amazonPayServiceFiegnProxy = null;
+	
 	@Value("${usermanagementservice-env}")
 	private String environment = null;
 
@@ -44,6 +47,18 @@ public class UserController {
 			Map<String, String> uriVariables = new LinkedHashMap<String, String>();
 			uriVariables.put("userId", user.getUserid());
 			restTemplate.postForEntity("http://localhost:9002/userAccounts/{userId}", null, null, uriVariables);
+		} catch (ServicessException exp) {
+			return new ResponseEntity<User>(HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+
+		return new ResponseEntity<User>(user, HttpStatus.CREATED);
+	}
+	
+	@PostMapping("/feign-client")
+	public ResponseEntity<User> save2(@RequestBody User user) {
+		try {
+			userService.save(user);
+		    amazonPayServiceFiegnProxy.saveAccountDetails(user.getUserid());
 		} catch (ServicessException exp) {
 			return new ResponseEntity<User>(HttpStatus.INTERNAL_SERVER_ERROR);
 		}
@@ -95,6 +110,20 @@ public class UserController {
 			uriVariables.put("userId", userId);
 			restTemplate.delete("http://localhost:9002/userAccounts/{userId}", uriVariables);
 			
+			userService.delete(userId);
+			
+		} catch (ServicessException exp) {
+			return new ResponseEntity<HttpStatus>(HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+
+		return new ResponseEntity<HttpStatus>(HttpStatus.NO_CONTENT);
+	}
+	
+	@DeleteMapping(path = "/{id}/feign-client")
+	public ResponseEntity<HttpStatus> deleteById2(@PathVariable("id") String userId) {
+		try {
+			
+			amazonPayServiceFiegnProxy.deleteAccountDetails(userId);
 			userService.delete(userId);
 			
 		} catch (ServicessException exp) {

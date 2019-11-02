@@ -6,11 +6,10 @@ import org.springframework.cloud.openfeign.EnableFeignClients;
 
 @SpringBootApplication
 @EnableFeignClients("com.datageeks")
-
-public class UsermanagementserviceApplication {
+public class LocationServiceApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(UsermanagementserviceApplication.class, args);
+		SpringApplication.run(LocationServiceApplication.class, args);
 	}
 
 }
