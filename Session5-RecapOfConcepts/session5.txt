@@ -1,0 +1,133 @@
+Communication between MicroServices :-
+***********************************
+	=>There are two ways to communicate between microservices.
+		1.RestTemplate
+		2.FeignClient
+
+
+1.RestTemplate:
+**************
+	RestTemplate has given by SpringFramework. The RestTemplate has given overloaded methods for GET,PUT,POST,DELETE requests.
+
+	Make use of appropriate request and do the needful.
+
+refer LocationService App => LocationDemoController 
+
+	@GetMapping("/google/config")
+	public ResponseEntity<GoogleWithSampleInfo> loadAllConfig() {
+
+		RestTemplate restTemplate = new RestTemplate();
+		ResponseEntity<GoogleWithSampleInfo> resEntity = restTemplate
+				.getForEntity("http://localhost:8102/googlemaps/config", GoogleWithSampleInfo.class);
+		GoogleWithSampleInfo allInfo = resEntity.getBody();
+		allInfo.setMessage(sampleBean.getMessage());
+		allInfo.setJob(sampleBean.getJob());
+
+		return new ResponseEntity<GoogleWithSampleInfo>(allInfo, HttpStatus.OK);
+	}
+
+
+Observe GoogleWithSampleInfo.java has the json properties as an isntance variables returned by  GoogleMapService http://localhost:8102/googlemaps/config url So that json response will automcatically binded within GoogleWithSampleInfo.java .
+
+=> How to hold dependent microservice response within dependency microservice ?
+	Within Dependency microservice define a bean which contains instance variables mapping to the dependent microservice json response.
+	
+		Ex : GoogleWithSampleInfo.java has declared duty and info instace variables which are mapping to response of GoogleMapService http://localhost:8102/googlemaps/config url.
+
+
+Drawback :
+*********
+	=> RestTemplate does not support Client Side Load Balancing.
+
+
+2.FeignClient :
+*************
+	=> FeignClient makes easier to develop microservice communication.
+	=> FeignClient can provide integration with Ribbon so that we can achive load balancing.
+	=> can be available to us with the dependency spring-cloud-starter-feign
+
+ Ribbon :-
+*********
+	=>Ribbon is the client side load balancer, can distribute the load with multiple instances.
+	=> can be available to us with the dependency spring-cloud-starter-netflix-ribbon
+
+=> Assume in our case LocationService is the Dependent Service and GoogleMapsService is the Depedency Service.
+=> GoogleMapService is avialable with two instances 8102,8103.
+=> Ribbon has to distribute the load between these two instances. 
+	refer diagram. Location-GoogleMaps-Ribbon.png
+
+Procedure to work with Feign Client and Ribbon  in LocationService:
+******************************************************************
+
+1. Add the fllowing two depednecies in LocationService pom.xml.
+
+	<!-- https://mvnrepository.com/artifact/org.springframework.cloud/spring-cloud-starter-feign -->
+		<dependency>
+			<groupId>org.springframework.cloud</groupId>
+			<artifactId>spring-cloud-starter-feign</artifactId>
+			<version>1.4.4.RELEASE</version>
+		</dependency>
+
+		<!-- https://mvnrepository.com/artifact/org.springframework.cloud/spring-cloud-starter-netflix-ribbon -->
+		<dependency>
+			<groupId>org.springframework.cloud</groupId>
+			<artifactId>spring-cloud-starter-netflix-ribbon</artifactId>
+		</dependency>
+
+2. Apply @EnableFeignClients("com.datageeks") annotation at LocationServiceApplication.java
+
+3. Develop a GoogleMapsFeignProxy in LocationService
+
+package com.datageeks.controller;
+import org.springframework.cloud.netflix.ribbon.RibbonClient;
+import org.springframework.cloud.openfeign.FeignClient;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+
+@FeignClient(name = "google-map-service")
+@RibbonClient(name = "google-map-service")
+public interface GoogleMapsFeignProxy {
+
+	@GetMapping("/googlemaps/config")
+	public abstract ResponseEntity<GoogleWithSampleInfo> getGoogleConfigInfo();
+}
+
+4. Within LocationDemoController take the GoogleMapsFeignProxy  as dependecy, make use of it to communicate with the GoogleMapsService.
+
+	@GetMapping("/google/config/feign-client")
+	public ResponseEntity<GoogleWithSampleInfo> loadAllConfig2() {
+
+		ResponseEntity<GoogleWithSampleInfo> resEntity = googleProxy.getGoogleConfigInfo();
+		GoogleWithSampleInfo allInfo = resEntity.getBody();
+		allInfo.setMessage(sampleBean.getMessage());
+		allInfo.setJob(sampleBean.getJob());
+
+		return new ResponseEntity<GoogleWithSampleInfo>(allInfo, HttpStatus.OK);
+	}
+	
+5. As we are not integrating with NamingServer, the availabe instances of a GoogleMapsService to be provided to the Ribbon using following property in bootstrap.properties of LocationService.
+
+	google-map-service.ribbon.listOfServers=localhost:8102,localhost:8103
+
+
+=> Procedure to start the Ribbon enable application.
+
+		1. Start Spring-Cloud-Config-Server app
+
+		2. Start the GoogleMapsService with the port 8102.
+				Goto GoogleMapServiceApplication.java => Run As => Run Configurations => on left side under java application => Right Click => new Configuration => Observer the Right side window the Main class loaded with GoogleMapServiceApplication => Go To Argument => VM Arguments => -Dserver.port = 8102 => Apply => Run
+
+		3. Start the GoogleMapService with Port 8103.
+				Follow above procedure update the port with 8103.
+
+		4. Start the LocationService.
+
+
+
+
+
+		
+
+
+
+
