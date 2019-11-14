@@ -1,0 +1,86 @@
+					Working Naming Server:
+					********************
+=> Naming Server can be used for server side load balancing.
+=> Naming Server can distrute the load between microservice instances equally.
+=> Every Microservice has to registered with the  Naming Server. This is called Service Registry.
+=> The Ribbon Client can be used for client side load balancing, Ribbon client can communicate with the naming server to get     the available microservice.
+=> Here there are multiple Naming Servers available in market but the famous one is Netflix-Eureka-Naming-Server.
+=> There are two steps to Register Microservices with the naming server.
+
+	Step1 : Develop a seperate microservice for naming server.
+	Step2: Register Every MicroService with the Naming Server.
+
+
+Step1 : Develop a seperate microservice for naming server.
+*********************************************************
+	=>go to spring.start.io generate the project with following information.
+
+	Dependencies : Actuator,Devtool, Eureka Server,Config Client, Web
+	artifact id : eureka-naming-server-micro-service
+	group id :	com.datageeks
+	type :war
+
+	=> Open EurekaNamingServerMicroServiceApplication.java file apply @EnableEurekaServer annotation.
+
+	=> Add the following properties in application.properties file.
+
+	spring.application.name=netflix-eureka-naming-server
+	server.port = 8761
+	eureka.client.registerWithEureka=false
+	eureka.client.fetchRegistry=false
+
+	=> Start the Naming Server 
+		Goto => EurekaNamingServerMicroServiceApplication.java => Run as Java Application.
+
+	=> Open : http://localhost:8761/ you can see none of the microservices registered with the naming server.
+
+	***=> Start the Spring Cloud Config Server microservice for proceeding with Step2 
+
+
+Step2: Register Every MicroService with the Naming Server.
+*********************************************************
+
+	1. Registering Location Service with the Naming Server.
+
+	 *** add the "spring-cloud-starter-netflix-eureka-client" dependency in location-service pom.xml
+
+	<!-- https://mvnrepository.com/artifact/org.springframework.cloud/spring-cloud-starter-netflix-eureka-client -->
+		<dependency>
+			<groupId>org.springframework.cloud</groupId>
+			<artifactId>spring-cloud-starter-netflix-eureka-client</artifactId>
+		</dependency>
+
+	*** Open LocationServiceApplication.java apply @EnableDiscoveryClient annotation.
+
+	*** Open bootstrap.properties/application.properties  add the folloing property
+
+		eureka.client.eurekaServer.defaultZone=http://localhost:8761/eureka
+
+	*** Start the Location Service Naming Server.
+
+	*** Refresh http://localhost:8761/ url , observe that "location-service registered with the naming server.
+
+
+ 	 2. Registering GoogleMapService with the Naming Server.
+
+	 *** add the "spring-cloud-starter-netflix-eureka-client" dependency in goolge-map-service pom.xml
+
+	<!-- https://mvnrepository.com/artifact/org.springframework.cloud/spring-cloud-starter-netflix-eureka-client -->
+		<dependency>
+			<groupId>org.springframework.cloud</groupId>
+			<artifactId>spring-cloud-starter-netflix-eureka-client</artifactId>
+		</dependency>
+
+	*** Open GoogleServiceApplication.java apply @EnableDiscoveryClient annotation.
+
+	*** Open bootstrap.properties/application.properties  add the folloing property
+
+		eureka.client.eurekaServer.defaultZone=http://localhost:8761/eureka
+
+	*** As we applied Client Side Load balancing for google-map-service with ribbon in location-service proxy, to check the functionality we will start google map service with different instances (ports).
+
+		Right Click on GoogleMapServiceApplication.java => Run as => Runconfigurations => on new window left side right click on java application => new configuration => on right side update the Name: GoogleMapServiceApplication8102 => click on Arguments => add -Dserver.port=8102 in VM argument box.
+
+		Repeat the same process by updating port with 8103 and 8104
+
+	*** Refresh http://localhost:8761/ url , observe that "google-map-service registered with the naming server with different instances
