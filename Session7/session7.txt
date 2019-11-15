@@ -1,0 +1,69 @@
+API-Gate-Way :-
+***********
+
+=> API-Gate-Way is the front controller for the microservices. It's just like a filter.
+=> Every request in microservices should be forwarded through API-Gate-Way.
+=> Every request must be forwaded through api gate way so we should apply dynamic load balancing on API Gate Way. So the reason we should register api gateway with Eureka Naming Server.
+API-Gate-Way does the following jobs.
+
+	1. Athentication : User request has to be atheticated before processed by microservice. Which can be done in API-Gate-Way.
+	=> How can you provide security to microservices?
+		
+		Whenever user sends a request, the request header should contain access-token. The API-Gateway validates this token with the database.If the token is valid then only request will be forwarded to the microservice otherwise rejects from API Gate Way.
+
+	 =>How can we generate access-token?
+		Once the user registration is successfull, access-token can be generated combination of user-id and configured hexa decimal number.
+
+	=> How user registration can be processed without access-token through API-Gate-Way?
+		At the time of user registration athencation can be proceded with the help of organization id. The Organization id uniq for application.
+
+	2. Autherization :
+
+		API-Gate-Way validates user roles, before forwarding request to microservice.
+
+	3. Rate Limit: We can implement a feature, where from perticular ip address or user ,  acceptable request count per hour should be less than or equals to perticular number.This is called Rate Limit.
+	
+	4. Service Agregation:
+	
+		We give common uri to the user, when the user request with that uri, we invoke multiple microservices through api gate way, then agregate the response from all the microservices, finally agregated response will be forwaded to the end user. This is called Service Agregation.
+
+	
+ 1. Procedure to Develop API  GateWay :
+
+	Go to start.spring.io
+		artifact id : zuul-api-gate-way-micro-service
+		group id    : com.datageeks
+		type	    : war
+		dependecies : zuul,Eureka Discovery Client , Actuator ,Devtools
+
+	
+2. go to application.properties :
+		spring.application.name=zuul-api-gate-way
+		server.port=9000
+		eureka.client.eurekaServer.defaultZone=http://localhost:8761/eureka
+
+3. Apply @EnableZuulProxy annotation on  ZuulApiGateWayMicroServiceApplication.java
+
+
+4. Create api gate way class by extending ZuulFiler class.
+	refer ZullApiGateWay.java
+
+Procedure to run the application.
+
+	Start the service in the following sequence.
+
+		1. Naming-Server
+		2. spring-cloud-config-server
+		3. zull-service
+		4. location-service
+		5. google-maps-service with multiple ports.
+
+5.*** Request should be forwarded through api-gateway so the url 
+
+	http://localhost:9000/{micro-service-name}/{resource-url}
+
+	for location service :    http://localhost:9000/location-service/locations/config
+	for google maps service:  http://localhost:9000/google-map-service/googlemaps/config
+
+	Before requesting we should add access-token within request header otherwise exception will be thrown.
+	access-token = 982u3hssdhyituhst8ytq72623
