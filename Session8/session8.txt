@@ -1,0 +1,118 @@
+Usage of spring-cloud-starter-sleuth :
+*************************************
+spring-cloud-starter-sleuth can generate the uniq request id for every request. This request id can be used by ZipkinDistributeTracingServer to maintain the request hirarchy.
+
+procedure to work with spring-cloud-starter-sleuth:
+***************************************************
+
+1. configure spring-cloud-starter-sleuth dependency in GoogleMaps-MicroService pom.xml 
+
+		<dependency>
+			<groupId>org.springframework.cloud</groupId>
+			<artifactId>spring-cloud-starter-sleuth</artifactId>
+		</dependency>
+
+2.Within the GoogleMapServiceApplication.java file add following code
+
+	@Bean
+	public Sampler defaultSampler()
+	{
+		return Sampler.ALWAYS_SAMPLE;
+	}
+	
+
+Repeat the same for LocationService , APIGateWay microservices.
+
+Implementing Zipkin Server For Distributed Tracing :
+**************************************************
+
+What is Distributed Tracing?
+
+Distributed Tracing is crucial for troubleshooting and understanding microservices. It is very useful when we need to track the request passing through multiple microservices. Distributed Tracing can be used to measure the performance of the microservices. 
+
+It is easy to identify which microservice is failed or having performance issues whenever there are multiple service calls within a single request.
+
+=> ZipkinDistributedTracingServer comes with the integration of RabbitMQ. All the microservices feed the messages into RabbitMQ, ZikinDistributedTracingServer consumes the log information from RabbitMQ.
+
+	refer ZipkinDistributedTracingServer diagram.
+
+Procedure to work with ZipkinDistributedTracingServer:-
+*****************************************************
+
+1. Install Erlang.
+2. Install RabbitMQ.
+3. Download the Zipkin-Server Executeble jar from 
+	https://search.maven.org/remote_content?g=io.zipkin.java&a=zipkin-server&v=LATEST&c=exec
+4.Start the Zipkin Server by specifying RabbitMQ host location so that which can integrates to RabbitMQ.
+
+	set RABBIT_URI=amqp://localhost
+
+	java -jar zipkin-server-2.7.0-exec.jar
+
+Now verify the ZipkinServer on : http://localhost:9411/zipkin
+
+Trace the microservice request in http://localhost:9411/zipkin .
+
+5. To integrate our microservices to both Zipkin and RabbitMQ add the following dependencies in pom.xml
+
+		<dependency>
+			<groupId>org.springframework.cloud</groupId>
+			<artifactId>spring-cloud-starter-zipkin</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework.amqp</groupId>
+			<artifactId>spring-rabbit</artifactId>
+		</dependency>
+
+	Repeat this step in Location,Googlmaps,ApiGate-way microservices.
+******************************************************************************************************
+
+Fault-Tolerance :-
+**************
+
+Fault-Tolerance  is a process of sending default responses to the consumer, either the microservice is down or the microservie is not responding.
+
+For Fault-Tolerance we use Hytrix.
+
+Implementing fault-tolerance in location-service:
+*************************************************
+1. Add the Hytrix depednecy in the location-service pom.xml
+
+<!-- https://mvnrepository.com/artifact/org.springframework.cloud/spring-cloud-starter-hystrix -->
+	<dependency>
+		<groupId>org.springframework.cloud</groupId>
+		<artifactId>spring-cloud-starter-hystrix</artifactId>
+		<version>1.4.0.RELEASE</version>
+	</dependency>
+
+2. Apply @EnableHystrix annotation on LocationServiceApplication.java
+
+3. Open LocationDemoController.java add the following code.
+
+	@GetMapping("/fault-tolerance")
+	@HystrixCommand(fallbackMethod = "fallbackLoadConfigDataHytrix")
+		public ResponseEntity<SampleBean> loadConfigDataHytrix() {
+		
+		throw new RuntimeException(" Hytrix Demo !!!");
+		
+	} 
+	
+	public ResponseEntity<SampleBean>  fallbackLoadConfigDataHytrix() 
+	{
+		SampleBean defaultResp = new SampleBean();
+		defaultResp.setJob("TEST111");
+		defaultResp.setMessage("Response from Hytrix");
+		
+		return new ResponseEntity<SampleBean>(defaultResp, HttpStatus.OK);
+	}
+
+	
+	
+	To the @HystrixCommand we mentioned fallbackMethod when the exception is rasised the fallbackMethod  will be triggered which sends default response to the consumer.
+
+
+	
+
+	
+
